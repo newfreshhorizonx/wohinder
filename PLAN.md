@@ -31,8 +31,8 @@ in bulk, human pace, daily limits. **Decide after milestone 4.**
 ## Milestones
 
 - [x] **M0** Repo, README, plan
-- [ ] **M1** Backend skeleton, profiles, rule-based score, greeting detection ← *in progress*
-- [ ] **M2** Read alert emails (IMAP) → parse listings → SQLite, deduplicate
+- [x] **M1** Backend skeleton, profiles, rule-based score, greeting detection
+- [ ] **M2** ← *next* Read alert emails (IMAP) → parse listings → SQLite, deduplicate
       → *switch to Claude Code on the laptop here (credentials stay local)*
 - [ ] **M3** AI scoring (red flags, vibe) + AI-written Anfrage
 - [ ] **M4** Swipe PWA on both iPhones
