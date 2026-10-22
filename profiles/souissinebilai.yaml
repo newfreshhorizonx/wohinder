@@ -1,22 +1,26 @@
-# Profile: souissinebilAI
-# TODO: souissinebilAI fills in his own details.
+# Profile: souissinebilai
 id: souissinebilai
-display_name: souissinebilAI
+display_name: Nebil Souissi
 members: [souissinebilAI]
 
 housing_types: [einzelzimmer, wg_2, wg_3, wg_4]
-max_warmmiete: 500          # TODO
-min_size_m2: 12             # TODO
-radius_km: 5                # TODO
+max_warmmiete: 600          # € warm, incl. Nebenkosten
+min_size_m2: 14
+radius_km: 15
 center:
   name: h_da Campus Schöfferstraße
   lat: 49.8668
   lon: 8.6383
-move_in_from: null          # TODO
-move_in_until: null
+move_in_from: 2027-01-01
+move_in_until: 2027-05-01
 
-study: Informatik an der Hochschule Darmstadt (h_da)
-hobbies: []                 # TODO
-personality: ""             # TODO
+study: Informatik an der Hochschule Darmstadt (h_da), 5. Semester
+hobbies: [Sport, Musik, Schach, mit Freunden ausgehen]
+personality: gesellig, zuverlässig, ordentlich und hilfsbereit – manchmal auch ein bisschen nerdy
 about_me: >
-  Ich studiere Informatik an der h_da.
+  Ich heiße Nebil und studiere Informatik im 5. Semester an der h_da.
+  Ich bin gesellig, zuverlässig und hilfsbereit – und manchmal auch ein bisschen nerdy.
+  Sauberkeit, Ordnung und ein respektvoller Umgang mit der Wohnung sind mir sehr wichtig.
+  In meiner Freizeit mache ich Sport, höre Musik, spiele Schach und gehe gern mit Freunden aus.
+  Ich bin Nichtraucher, habe keine Haustiere und suche eine freundliche WG für längere Zeit,
+  in der jeder sein eigenes Ding macht, man aber auch gern mal etwas zusammen unternimmt.
