@@ -94,6 +94,29 @@ def list_swipes(profile_id: str) -> list[Swipe]:
     return swipes.all(profile_id)
 
 
+@app.delete("/profiles/{profile_id}/swipes/{listing_id}")
+def undo_swipe(profile_id: str, listing_id: str) -> dict:
+    """Undo one swipe: the listing shows up in the feed again."""
+    _get_profile(profile_id)
+    if not swipes.remove(profile_id, listing_id):
+        raise HTTPException(404, f"No swipe for listing '{listing_id}'")
+    return {"status": "undone", "listing_id": listing_id}
+
+
+@app.get("/profiles/{profile_id}/saved")
+def saved(profile_id: str) -> list[dict]:
+    """Listings swiped right ("Gemerkt"), newest first, each with its Anfrage."""
+    profile = _get_profile(profile_id)
+    items = []
+    for listing_id in swipes.right_ids(profile_id):
+        listing = listings.get(listing_id)
+        if listing is None:  # listing vanished from the source
+            continue
+        items.append({"listing": listing, "score": score(listing, profile),
+                      "anfrage": anfrage_for(listing, profile)})
+    return items
+
+
 @app.delete("/profiles/{profile_id}/swipes")
 def reset_swipes(profile_id: str) -> dict:
     """Forget all swipes of a profile, so every listing shows up again (for testing)."""

@@ -3,7 +3,8 @@
 They look like real Darmstadt listings (prices, Stadtteile, contacts) so the
 scoring, greetings and Anfrage preview can be tested end to end. Some are made
 to hit edge cases on purpose: far over budget, unknown price/location, wrong
-move-in date, a whole flat that only fits the team profile.
+move-in date, a long description, and places with room for two (fake-12, fake-17)
+that fit the team profile.
 
 Once M2 is merged, the API reads listings from the database instead.
 """
@@ -26,7 +27,14 @@ FAKE_LISTINGS: list[Listing] = [
     _fake(1, source="wg-gesucht", title="Helles WG-Zimmer im Martinsviertel",
           housing_type=_T.WG_3, warmmiete=430, size_m2=16, lat=49.8795, lon=8.6625,
           available_from=date(2027, 1, 1), contact_name="WG Liebfrauenstraße",
-          description="Altbau, hohe Decken, große Küche. Wir kochen ab und zu zusammen."),
+          description=("Wir sind eine entspannte 3er-WG im Martinsviertel: Paula (Biologie), "
+                       "Tim (Maschinenbau) und ab Januar hoffentlich du. Die Wohnung ist ein "
+                       "Altbau mit hohen Decken, Dielenboden und einer großen Wohnküche, in der "
+                       "wir ab und zu zusammen kochen. Dein Zimmer hat 16 m², zwei Fenster nach "
+                       "Süden und ist unmöbliert. Bad mit Badewanne, Waschmaschine im Keller, "
+                       "Fahrradkeller vorhanden. Zum Herrngarten sind es zwei Minuten, zur h_da "
+                       "etwa 15 Minuten mit dem Rad. Putzplan gibt es, wird aber locker gesehen. "
+                       "Wir freuen uns auf eine kurze Nachricht mit ein paar Sätzen über dich!")),
     _fake(2, source="kleinanzeigen", title="Möbliertes Zimmer nahe Herrngarten",
           housing_type=_T.EINZELZIMMER, warmmiete=480, size_m2=14, lat=49.8770, lon=8.6545,
           available_from=date(2027, 2, 1), contact_name="Frau Becker",
@@ -86,4 +94,8 @@ FAKE_LISTINGS: list[Listing] = [
     _fake(16, source="kleinanzeigen", title="Zimmer frei – Details auf Anfrage",
           housing_type=_T.WG_3,
           description="Bitte meldet euch für mehr Infos."),
+    _fake(17, source="wg-gesucht", title="Ganze 2er-WG frei – zieht zu zweit ein!",
+          housing_type=_T.WG_2, warmmiete=890, size_m2=58, lat=49.8745, lon=8.6600,
+          available_from=date(2027, 2, 1), contact_name="Herr Neumann", free_rooms=2,
+          description="Beide Zimmer werden frei, ideal für zwei Freunde. Nähe Mathildenhöhe."),
 ]

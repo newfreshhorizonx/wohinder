@@ -47,6 +47,22 @@ def test_whole_flat_only_shows_up_for_team():
     assert "fake-12" not in feed_ids("souissinebilai")
 
 
+def test_team_only_sees_places_with_room_for_both():
+    team = feed_ids("team")
+    assert "fake-17" in team       # whole 2er-WG, 2 free rooms
+    assert "fake-13" not in team   # one room in a 2er-WG
+
+
+def test_feed_cards_have_score_parts_and_distance():
+    card = client.get(f"/profiles/{PROFILE}/feed").json()[0]
+    parts = card["score"]["parts"]
+    assert [p["name"] for p in parts] == ["Preis", "Lage", "Einzug", "Größe"]
+    assert [p["max"] for p in parts] == [40, 25, 20, 15]
+    # parts are rounded one by one, so their sum may be off by rounding
+    assert abs(sum(p["points"] for p in parts) - card["score"]["total"]) <= 2
+    assert card["score"]["distance_km"] is not None
+
+
 def test_unknown_profile_is_404():
     assert client.get("/profiles/nobody/feed").status_code == 404
 
@@ -80,6 +96,25 @@ def test_swipes_are_listed_and_can_be_reset():
 def test_swipes_are_per_profile():
     client.post(f"/profiles/{PROFILE}/swipes", json={"listing_id": "fake-1", "direction": "left"})
     assert "fake-1" in feed_ids("newfreshhorizonx")
+
+
+def test_undo_brings_card_back():
+    client.post(f"/profiles/{PROFILE}/swipes", json={"listing_id": "fake-1", "direction": "left"})
+    assert client.delete(f"/profiles/{PROFILE}/swipes/fake-1").status_code == 200
+    assert "fake-1" in feed_ids()
+
+
+def test_undo_without_swipe_is_404():
+    assert client.delete(f"/profiles/{PROFILE}/swipes/fake-1").status_code == 404
+
+
+def test_saved_lists_right_swipes_newest_first():
+    for listing_id, direction in [("fake-1", "right"), ("fake-2", "left"), ("fake-4", "right")]:
+        client.post(f"/profiles/{PROFILE}/swipes",
+                    json={"listing_id": listing_id, "direction": direction})
+    saved = client.get(f"/profiles/{PROFILE}/saved").json()
+    assert [item["listing"]["id"] for item in saved] == ["fake-4", "fake-1"]
+    assert saved[0]["anfrage"].startswith("Hallo Lena,")
 
 
 def test_unknown_listing_is_404():

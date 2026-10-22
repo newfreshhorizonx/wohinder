@@ -1,19 +1,21 @@
-/* Wohinder swipe app. Mobile first: designed for an iPhone held in one hand. */
+/* Wohinder swipe app. Designed for an iPhone held in one hand. */
 
 :root {
   --accent: #e1563e;
   --accent-dark: #b63d28;
   --yes: #2e9d5b;
   --no: #c94a4a;
+  --mid: #c68a12;
   --bg: #f6f1ec;
   --card: #ffffff;
   --text: #2a2321;
   --muted: #7a6e69;
   --line: #e7ddd6;
   --chip: #f3ebe5;
+  --seg: #eae2db;
   --shadow: 0 8px 24px rgba(60, 35, 25, 0.12);
   --radius: 20px;
-  /* iPhone safe areas (notch, home indicator); 0 on other devices */
+  /* iPhone safe areas (notch / Dynamic Island, home indicator); 0 elsewhere */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -26,6 +28,7 @@
     --muted: #b3a6a0;
     --line: #3d3431;
     --chip: #3a312e;
+    --seg: #2f2826;
     --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   }
 }
@@ -44,22 +47,26 @@ body {
   flex-direction: column;
   background: var(--bg);
   color: var(--text);
+  /* -apple-system = San Francisco, the iPhone's own font */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
+
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
 
 /* --- Top bar ------------------------------------------------------------- */
 
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: calc(var(--safe-top) + 12px) 16px 8px;
+  gap: 10px;
+  padding: calc(var(--safe-top) + 10px) 16px 8px;
 }
 
 .logo {
-  margin: 0;
+  margin: 0 auto 0 0;
   font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -67,13 +74,71 @@ body {
 }
 
 #profile {
-  max-width: 55%;
-  padding: 8px 12px;
+  max-width: 50%;
+  min-height: 36px;
+  padding: 6px 12px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--card);
   color: var(--text);
-  font-size: 15px;   /* 16px+ would stop iOS zooming, but select doesn't zoom */
+  font-size: 15px;
+}
+
+.icon-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  cursor: pointer;
+}
+.icon-btn .dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* --- Segmented control (iOS style) --------------------------------------- */
+
+.segmented {
+  display: flex;
+  margin: 2px 16px 8px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--seg);
+}
+.segmented button {
+  flex: 1;
+  min-height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.segmented button.active {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.count { font-weight: 400; opacity: 0.7; }
+
+/* --- Views --------------------------------------------------------------- */
+
+.view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* --- Card deck ----------------------------------------------------------- */
@@ -81,7 +146,7 @@ body {
 .deck {
   position: relative;
   flex: 1;
-  margin: 8px 16px;
+  margin: 0 16px;
   min-height: 0;
 }
 
@@ -94,7 +159,8 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
-  touch-action: none;           /* we handle the finger ourselves */
+  /* pan-y: the browser scrolls vertically, horizontal drags come to our code */
+  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
   will-change: transform;
@@ -110,20 +176,19 @@ body {
 
 .card-header {
   position: relative;
-  padding: 20px 20px 16px;
+  padding: 18px 20px 16px;
   background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: #fff;
 }
 
 .card-source {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.85;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.9;
 }
 
 .card-title {
-  margin: 6px 64px 0 0;
+  margin: 4px 64px 0 0;
   font-size: 21px;
   line-height: 1.25;
 }
@@ -142,37 +207,76 @@ body {
   font-weight: 800;
 }
 .score.high { color: var(--yes); }
-.score.mid  { color: #c68a12; }
+.score.mid  { color: var(--mid); }
 .score.low  { color: var(--no); }
 
 .card-body {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 16px 20px 20px;
 }
 
 .facts {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
   margin: 0 0 16px;
 }
 
 .fact {
-  padding: 10px 12px;
+  min-width: 0;
+  padding: 9px 12px;
   border-radius: 12px;
   background: var(--chip);
 }
 .fact dt { font-size: 12px; color: var(--muted); }
-.fact dd { margin: 2px 0 0; font-size: 17px; font-weight: 700; }
+.fact dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* long contact names end with "…" */
+}
 
-.description { margin: 0 0 14px; line-height: 1.5; }
+.description { margin: 0 0 18px; line-height: 1.5; }
+
+.section-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: none;
+}
+
+/* Score bars: one row per category */
+.bars { margin: 0 0 14px; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 58px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+  font-size: 13px;
+}
+.bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--chip);
+  overflow: hidden;
+}
+.bar-fill { height: 100%; border-radius: 999px; }
+.bar-fill.high { background: var(--yes); }
+.bar-fill.mid  { background: var(--mid); }
+.bar-fill.low  { background: var(--no); }
+.bar-points { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .reasons {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0;
+  margin: 0 0 18px;
   padding: 0;
   list-style: none;
 }
@@ -182,6 +286,17 @@ body {
   border-radius: 999px;
   font-size: 13px;
   color: var(--muted);
+}
+
+.listing-link {
+  display: block;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
 }
 
 /* "ANFRAGE" / "WEITER" stamps that fade in while dragging */
@@ -213,7 +328,7 @@ body {
   padding: 24px;
   color: var(--muted);
 }
-.empty[hidden], .status[hidden] { display: none; }
+.saved .empty { position: static; flex: 1; }
 .empty-title { margin: 0; font-size: 20px; font-weight: 700; color: var(--text); }
 .empty-text { margin: 6px 0 18px; }
 
@@ -222,13 +337,14 @@ body {
 .actions {
   display: flex;
   justify-content: center;
-  gap: 40px;
-  padding: 12px 0 calc(var(--safe-bottom) + 16px);
+  align-items: center;
+  gap: 28px;
+  padding: 12px 0 calc(var(--safe-bottom) + 14px);
 }
 
 .action {
-  width: 68px;
-  height: 68px;
+  width: 66px;
+  height: 66px;
   border: none;
   border-radius: 50%;
   background: var(--card);
@@ -236,27 +352,77 @@ body {
   font-size: 30px;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 0.1s ease;
 }
-.action:active { transform: scale(0.92); }
+.action:active { transform: scale(0.9); }
 .action:disabled { opacity: 0.35; }
 .action-left  { color: var(--no); }
 .action-right { color: var(--yes); }
+.action-undo  { width: 48px; height: 48px; font-size: 24px; color: var(--mid); }
+
+/* --- Saved list ---------------------------------------------------------- */
+
+.saved-list {
+  flex: 1;
+  margin: 0;
+  padding: 0 16px calc(var(--safe-bottom) + 16px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  list-style: none;
+}
+.saved-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.saved-score {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--chip);
+  font-weight: 800;
+}
+.saved-score.high { color: var(--yes); }
+.saved-score.mid  { color: var(--mid); }
+.saved-score.low  { color: var(--no); }
+.saved-text { flex: 1; min-width: 0; }
+.saved-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-meta { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.saved-buttons { display: flex; flex-direction: column; gap: 6px; }
+.saved-buttons button { min-height: 32px; padding: 5px 10px; font-size: 13px; }
 
 /* --- Buttons ------------------------------------------------------------- */
 
 .btn-primary, .btn-secondary {
   display: inline-block;
+  min-height: 44px;            /* Apple's minimum touch target */
   padding: 11px 16px;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
+  text-align: center;
   cursor: pointer;
 }
 .btn-primary   { border: none; background: var(--accent); color: #fff; }
 .btn-secondary { border: 1px solid var(--line); background: var(--card); color: var(--text); }
 
-/* --- Anfrage sheet ------------------------------------------------------- */
+/* --- Bottom sheets ------------------------------------------------------- */
 
 .sheet-backdrop {
   position: fixed;
@@ -266,19 +432,26 @@ body {
   background: rgba(20, 12, 10, 0.45);
   z-index: 10;
 }
-.sheet-backdrop[hidden] { display: none; }
 
 .sheet {
   width: 100%;
   max-height: 90%;
   display: flex;
   flex-direction: column;
-  padding: 20px 16px calc(var(--safe-bottom) + 16px);
+  padding: 8px 16px calc(var(--safe-bottom) + 16px);
   border-radius: var(--radius) var(--radius) 0 0;
   background: var(--card);
   animation: slide-up 0.25s ease;
 }
 @keyframes slide-up { from { transform: translateY(100%); } }
+
+.grabber {
+  width: 36px;
+  height: 5px;
+  margin: 0 auto 12px;
+  border-radius: 999px;
+  background: var(--line);
+}
 
 .sheet h2 { margin: 0; font-size: 20px; }
 .sheet-hint { margin: 4px 0 12px; font-size: 13px; color: var(--muted); }
@@ -301,9 +474,29 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 .sheet-buttons .btn-primary { margin-left: auto; }
+
+.filter-label { margin: 14px 0 8px; font-size: 15px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-toggle {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 14px;
+  cursor: pointer;
+}
+.chip-toggle[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+#min-score { width: 100%; accent-color: var(--accent); }
 
 /* --- Toast --------------------------------------------------------------- */
 
@@ -317,9 +510,9 @@ body {
   background: var(--text);
   color: var(--bg);
   font-size: 14px;
+  white-space: nowrap;
   z-index: 20;
 }
-.toast[hidden] { display: none; }
 
 /* Wider screens (laptop browser): keep the phone-like layout centered */
 @media (min-width: 600px) {

@@ -2,7 +2,7 @@
 // The app shell (HTML, CSS, JS, icons) comes from a cache; API calls always
 // go to the network, because listings and swipes must be fresh.
 
-const CACHE = "wohinder-v1";   // bump the number whenever the shell files change
+const CACHE = "wohinder-v2";   // bump the number whenever the shell files change
 const SHELL = [
   "./",
   "index.html",
