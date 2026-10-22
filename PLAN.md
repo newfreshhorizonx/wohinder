@@ -40,6 +40,12 @@ in bulk, human pace, daily limits. **Decide after milestone 4.**
 - [ ] **M6** Reply tracking + push notifications for new top matches
 - [ ] **M7** Deploy to a small server
 
+## Team workflow
+
+- `main` = working version only. Each person works on a **branch** and merges via **pull request**.
+- **Mayyas:** M2 email import (branch `email-import`). His laptop holds the inbox credentials.
+- **souissinebilAI:** M4 swipe PWA with fake listings (own branch), plugged into real data later.
+
 ## Still to collect
 
 - [ ] Profile details for both (budget Warmmiete, Umkreis, move-in date, size)
