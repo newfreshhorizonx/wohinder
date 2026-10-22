@@ -1,0 +1,23 @@
+# Profile: newfreshhorizonx
+# Values marked TODO are placeholders. We still need to fill them in together.
+id: newfreshhorizonx
+display_name: Mayyas
+members: [newfreshhorizonx]
+
+housing_types: [einzelzimmer, wg_2, wg_3, wg_4]
+max_warmmiete: 500          # TODO: real budget (€ warm)
+min_size_m2: 12             # TODO
+radius_km: 5                # TODO
+center:
+  name: h_da Campus Schöfferstraße
+  lat: 49.8668
+  lon: 8.6383
+move_in_from: null          # TODO: earliest move-in date, e.g. 2026-12-01
+move_in_until: null
+
+study: Informatik an der Hochschule Darmstadt (h_da)
+hobbies: [Schach, Gitarre, Musik, Fußball]
+personality: offen und gesellig
+about_me: >
+  Ich studiere Informatik an der h_da und bin ein offener, geselliger Mensch.
+  In meiner Freizeit spiele ich Schach, Gitarre und Fußball und höre viel Musik.

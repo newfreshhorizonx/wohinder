@@ -1,0 +1,22 @@
+# Profile: souissinebilAI
+# TODO: souissinebilAI fills in his own details.
+id: souissinebilai
+display_name: souissinebilAI
+members: [souissinebilAI]
+
+housing_types: [einzelzimmer, wg_2, wg_3, wg_4]
+max_warmmiete: 500          # TODO
+min_size_m2: 12             # TODO
+radius_km: 5                # TODO
+center:
+  name: h_da Campus Schöfferstraße
+  lat: 49.8668
+  lon: 8.6383
+move_in_from: null          # TODO
+move_in_until: null
+
+study: Informatik an der Hochschule Darmstadt (h_da)
+hobbies: []                 # TODO
+personality: ""             # TODO
+about_me: >
+  Ich studiere Informatik an der h_da.

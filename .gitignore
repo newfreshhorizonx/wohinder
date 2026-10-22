@@ -1,0 +1,21 @@
+# Secrets – never commit
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Local data
+*.sqlite
+*.db
+data/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store

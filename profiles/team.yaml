@@ -1,0 +1,21 @@
+# Team profile: both of us moving in together.
+id: team
+display_name: Team (beide zusammen)
+members: [newfreshhorizonx, souissinebilAI]
+
+housing_types: [wg_2, wohnung_2_zimmer]
+max_warmmiete: 1000         # TODO: combined budget (€ warm)
+min_size_m2: 40             # TODO
+radius_km: 5                # TODO
+center:
+  name: h_da Campus Schöfferstraße
+  lat: 49.8668
+  lon: 8.6383
+move_in_from: null          # TODO
+move_in_until: null
+
+study: beide Informatik an der Hochschule Darmstadt (h_da)
+hobbies: [Schach, Gitarre, Musik, Fußball]
+personality: ""             # TODO: how we describe ourselves as a duo
+about_me: >
+  Wir sind zwei Informatik-Studenten an der h_da und suchen gemeinsam eine Wohnung.
