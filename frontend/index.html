@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <!-- viewport-fit=cover: use the whole iPhone screen, incl. the notch area -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wohinder</title>
+  <meta name="theme-color" content="#e1563e">
+
+  <!-- PWA: manifest for Android/desktop, the apple-* tags for iPhone -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Wohinder">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="logo">Wohinder</h1>
+    <select id="profile" aria-label="Profil wählen"></select>
+  </header>
+
+  <main class="deck" id="deck" aria-live="polite">
+    <!-- cards are inserted here by app.js -->
+    <div class="empty" id="empty" hidden>
+      <p class="empty-title">Keine neuen Matches</p>
+      <p class="empty-text">Du hast alle Anzeigen gesehen.</p>
+      <button class="btn-secondary" id="reset">Alle wieder anzeigen</button>
+    </div>
+    <p class="status" id="status" hidden></p>
+  </main>
+
+  <nav class="actions">
+    <button class="action action-left" id="btn-left" aria-label="Überspringen">✕</button>
+    <button class="action action-right" id="btn-right" aria-label="Anfrage schicken">✓</button>
+  </nav>
+
+  <!-- Anfrage preview after a right swipe -->
+  <div class="sheet-backdrop" id="sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <h2 id="sheet-title">Deine Anfrage</h2>
+      <p class="sheet-hint">Vorschau: Senden kommt in Meilenstein 5.</p>
+      <textarea id="anfrage" rows="12"></textarea>
+      <div class="sheet-buttons">
+        <a class="btn-secondary" id="open-listing" target="_blank" rel="noopener">Anzeige öffnen</a>
+        <button class="btn-secondary" id="copy">Kopieren</button>
+        <button class="btn-primary" id="close-sheet">Weiter swipen</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
