@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
 
+from .db import ListingStore
 from .greeting import greeting_for
 from .models import Listing, Profile, ScoreBreakdown
 from .profiles import load_profiles
@@ -34,6 +35,16 @@ def list_profiles() -> list[Profile]:
 @app.get("/profiles/{profile_id}")
 def get_profile(profile_id: str) -> Profile:
     return _get_profile(profile_id)
+
+
+@app.get("/listings")
+def list_listings() -> list[Listing]:
+    """Everything imported from alert emails so far, newest first."""
+    store = ListingStore()
+    try:
+        return store.all()
+    finally:
+        store.close()
 
 
 @app.post("/profiles/{profile_id}/score")
