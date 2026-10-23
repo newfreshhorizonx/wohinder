@@ -1,0 +1,17 @@
+{
+  "name": "Wohinder",
+  "short_name": "Wohinder",
+  "description": "Swipe dich zur nächsten Wohnung in Darmstadt.",
+  "lang": "de",
+  "start_url": "/app/",
+  "scope": "/app/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f1ec",
+  "theme_color": "#e1563e",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

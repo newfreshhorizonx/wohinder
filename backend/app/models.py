@@ -67,9 +67,23 @@ class Listing(BaseModel):
     contact_name: str | None = None  # e.g. "Frau Müller", "Max", "WG Kranichstein"
     contact_email: str | None = None
     description: str = ""
+    # How many rooms are free in this listing. A "Zimmer in 2er-WG" ad has 1; a
+    # 2er-WG where both rooms are free has 2. The team profile needs one per member.
+    # warmmiete is the total for everything offered (all free rooms together).
+    free_rooms: int = Field(default=1, ge=1)
+
+
+class ScorePart(BaseModel):
+    """Points of one category, e.g. Preis 32 of 40 (for the score bars in the app)."""
+
+    name: str
+    points: int
+    max: int
 
 
 class ScoreBreakdown(BaseModel):
     total: int = Field(ge=0, le=100)
     rejected: bool = False           # hard filter failed (e.g. wrong type, far over budget)
     reasons: list[str] = []
+    parts: list[ScorePart] = []
+    distance_km: float | None = None  # to the profile's center, if the location is known

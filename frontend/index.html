@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <!-- viewport-fit=cover: use the whole iPhone screen, incl. the notch area -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wohinder</title>
+  <meta name="theme-color" content="#e1563e">
+
+  <!-- PWA: manifest + icons; the apple-* tags are what the iPhone reads -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Wohinder">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="logo">Wohinder</h1>
+    <select id="profile" aria-label="Profil wählen"></select>
+    <button class="icon-btn" id="btn-filter" aria-label="Filter">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg>
+      <span class="dot" id="filter-dot" hidden></span>
+    </button>
+  </header>
+
+  <!-- iOS-style segmented control: switch between swiping and the saved list -->
+  <div class="segmented" role="tablist">
+    <button role="tab" id="tab-swipe" class="active" aria-selected="true">Swipen <span class="count" id="feed-count"></span></button>
+    <button role="tab" id="tab-saved" aria-selected="false">Gemerkt <span class="count" id="saved-count"></span></button>
+  </div>
+
+  <!-- View 1: card deck -->
+  <section class="view" id="view-swipe">
+    <main class="deck" id="deck" aria-live="polite">
+      <!-- cards are inserted here by app.js -->
+      <div class="empty" id="empty" hidden>
+        <p class="empty-title" id="empty-title">Keine neuen Matches</p>
+        <p class="empty-text" id="empty-text">Du hast alle Anzeigen gesehen.</p>
+        <button class="btn-secondary" id="reset">Alle wieder anzeigen</button>
+      </div>
+      <p class="status" id="status" hidden></p>
+    </main>
+
+    <nav class="actions">
+      <button class="action action-left" id="btn-left" aria-label="Überspringen">✕</button>
+      <button class="action action-undo" id="btn-undo" aria-label="Letzten Swipe rückgängig machen" disabled>↶</button>
+      <button class="action action-right" id="btn-right" aria-label="Anfrage schicken">✓</button>
+    </nav>
+  </section>
+
+  <!-- View 2: saved listings (right swipes) -->
+  <section class="view saved" id="view-saved" hidden>
+    <ul class="saved-list" id="saved-list"></ul>
+    <div class="empty" id="saved-empty" hidden>
+      <p class="empty-title">Noch nichts gemerkt</p>
+      <p class="empty-text">Wische nach rechts, um eine Anfrage vorzubereiten.</p>
+    </div>
+  </section>
+
+  <!-- Bottom sheet: Anfrage preview -->
+  <div class="sheet-backdrop" id="sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="grabber" aria-hidden="true"></div>
+      <h2 id="sheet-title">Deine Anfrage</h2>
+      <p class="sheet-hint">Vorschau: Senden kommt in Meilenstein 5.</p>
+      <textarea id="anfrage" rows="12"></textarea>
+      <div class="sheet-buttons">
+        <a class="btn-secondary" id="open-listing" target="_blank" rel="noopener">Anzeige öffnen</a>
+        <button class="btn-secondary" id="copy">Kopieren</button>
+        <button class="btn-primary" id="close-sheet">Fertig</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Bottom sheet: filters -->
+  <div class="sheet-backdrop" id="filter-sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="filter-title">
+      <div class="grabber" aria-hidden="true"></div>
+      <h2 id="filter-title">Filter</h2>
+      <p class="sheet-hint">Gilt nur auf diesem iPhone und nur für dieses Profil.</p>
+
+      <h3 class="filter-label">Wohnform</h3>
+      <div class="chips" id="filter-types"></div>
+
+      <h3 class="filter-label">Mindest-Score: <span id="min-score-value">0</span></h3>
+      <input type="range" id="min-score" min="0" max="90" step="5" value="0">
+
+      <div class="sheet-buttons">
+        <button class="btn-secondary" id="filter-reset">Zurücksetzen</button>
+        <button class="btn-primary" id="filter-done">Fertig</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
