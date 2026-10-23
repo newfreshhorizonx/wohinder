@@ -14,6 +14,7 @@ Open the app → swipe through good matches → done.
 | Phones | Both iPhone → **PWA** (web app on home screen) | Native iOS needs a Mac + 99 €/year, or reinstalls every 7 days |
 | Backend | **Python + FastAPI** | Easy to learn coming from Java/C++, great libraries |
 | Finding listings | **Read the sites' own alert emails** from a dedicated Gmail inbox | No scraping → no bans, stable |
+| Sites | **WG-Gesucht + Kleinanzeigen**; ImmoScout skipped for now | ImmoScout needs a paid subscription to send Anfragen |
 | Interaction | **Swipe**: right = send Anfrage, left = skip | Minimum effort, that's the whole point |
 | Greeting | Detected from the listing (Frau / Herr / liebe WG / neutral) | |
 | Profiles | 3 profiles: each person + `team` | Search separately *and* together |

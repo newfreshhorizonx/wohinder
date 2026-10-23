@@ -6,7 +6,7 @@ to hit edge cases on purpose: far over budget, unknown price/location, wrong
 move-in date, a long description, and places with room for two (fake-12, fake-17)
 that fit the team profile.
 
-Once M2 is merged, the API reads listings from the database instead.
+The API uses them only while the listing database (filled by the email import) is empty.
 """
 
 from __future__ import annotations
