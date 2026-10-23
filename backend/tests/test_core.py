@@ -50,6 +50,11 @@ def test_greeting_first_name():
     assert greeting_for(make_listing(contact_name="Lena")) == "Hallo Lena,"
 
 
+def test_greeting_first_name_beats_wg_type():
+    listing = make_listing(contact_name="Lena", housing_type=HousingType.WG_2)
+    assert greeting_for(listing) == "Hallo Lena,"
+
+
 def test_greeting_company():
     listing = make_listing(contact_name="Musterbau Immobilien GmbH")
     assert greeting_for(listing) == "Sehr geehrte Damen und Herren,"
@@ -103,6 +108,19 @@ def test_wrong_move_in_date_costs_points():
     early = score(make_listing(available_from=date(2026, 11, 1)), make_profile()).total
     fine = score(make_listing(available_from=date(2027, 1, 1)), make_profile()).total
     assert fine > early
+
+
+def test_team_needs_a_free_room_per_member():
+    team = make_profile(members=["a", "b"], housing_types=[HousingType.WG_2])
+    one_room = make_listing(housing_type=HousingType.WG_2, free_rooms=1)
+    two_rooms = make_listing(housing_type=HousingType.WG_2, free_rooms=2)
+    assert score(one_room, team).rejected
+    assert not score(two_rooms, team).rejected
+
+
+def test_whole_flat_fits_team_without_free_rooms():
+    team = make_profile(members=["a", "b"], housing_types=[HousingType.WOHNUNG_2_ZIMMER])
+    assert not score(make_listing(housing_type=HousingType.WOHNUNG_2_ZIMMER), team).rejected
 
 
 # --- Profiles ----------------------------------------------------------------

@@ -1,0 +1,520 @@
+/* Wohinder swipe app. Designed for an iPhone held in one hand. */
+
+:root {
+  --accent: #e1563e;
+  --accent-dark: #b63d28;
+  --yes: #2e9d5b;
+  --no: #c94a4a;
+  --mid: #c68a12;
+  --bg: #f6f1ec;
+  --card: #ffffff;
+  --text: #2a2321;
+  --muted: #7a6e69;
+  --line: #e7ddd6;
+  --chip: #f3ebe5;
+  --seg: #eae2db;
+  --shadow: 0 8px 24px rgba(60, 35, 25, 0.12);
+  --radius: 20px;
+  /* iPhone safe areas (notch / Dynamic Island, home indicator); 0 elsewhere */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1716;
+    --card: #2a2422;
+    --text: #f4ece8;
+    --muted: #b3a6a0;
+    --line: #3d3431;
+    --chip: #3a312e;
+    --seg: #2f2826;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;             /* no page scrolling or rubber-banding while swiping */
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  /* -apple-system = San Francisco, the iPhone's own font */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+
+/* --- Top bar ------------------------------------------------------------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(var(--safe-top) + 10px) 16px 8px;
+}
+
+.logo {
+  margin: 0 auto 0 0;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+
+#profile {
+  max-width: 50%;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 15px;
+}
+
+.icon-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  cursor: pointer;
+}
+.icon-btn .dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* --- Segmented control (iOS style) --------------------------------------- */
+
+.segmented {
+  display: flex;
+  margin: 2px 16px 8px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--seg);
+}
+.segmented button {
+  flex: 1;
+  min-height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.segmented button.active {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.count { font-weight: 400; opacity: 0.7; }
+
+/* --- Views --------------------------------------------------------------- */
+
+.view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* --- Card deck ----------------------------------------------------------- */
+
+.deck {
+  position: relative;
+  flex: 1;
+  margin: 0 16px;
+  min-height: 0;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  /* pan-y: the browser scrolls vertically, horizontal drags come to our code */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+}
+
+/* The card behind the top one peeks out a little */
+.card.behind {
+  transform: scale(0.95) translateY(14px);
+  opacity: 0.7;
+}
+
+.card.animate { transition: transform 0.3s ease, opacity 0.3s ease; }
+
+.card-header {
+  position: relative;
+  padding: 18px 20px 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
+}
+
+.card-source {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.card-title {
+  margin: 4px 64px 0 0;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.score {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 19px;
+  font-weight: 800;
+}
+.score.high { color: var(--yes); }
+.score.mid  { color: var(--mid); }
+.score.low  { color: var(--no); }
+
+.card-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 20px 20px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.fact {
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--chip);
+}
+.fact dt { font-size: 12px; color: var(--muted); }
+.fact dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* long contact names end with "…" */
+}
+
+.description { margin: 0 0 18px; line-height: 1.5; }
+
+.section-label {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: none;
+}
+
+/* Score bars: one row per category */
+.bars { margin: 0 0 14px; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 58px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+  font-size: 13px;
+}
+.bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--chip);
+  overflow: hidden;
+}
+.bar-fill { height: 100%; border-radius: 999px; }
+.bar-fill.high { background: var(--yes); }
+.bar-fill.mid  { background: var(--mid); }
+.bar-fill.low  { background: var(--no); }
+.bar-points { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+.reasons li {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.listing-link {
+  display: block;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* "ANFRAGE" / "WEITER" stamps that fade in while dragging */
+.stamp {
+  position: absolute;
+  top: 150px;
+  padding: 4px 10px;
+  border: 3px solid;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.92);
+  opacity: 0;
+  pointer-events: none;
+}
+.stamp-yes { left: 20px; color: var(--yes); transform: rotate(-12deg); }
+.stamp-no  { right: 20px; color: var(--no); transform: rotate(12deg); }
+
+/* --- Empty state & status ------------------------------------------------ */
+
+.empty, .status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+}
+.saved .empty { position: static; flex: 1; }
+.empty-title { margin: 0; font-size: 20px; font-weight: 700; color: var(--text); }
+.empty-text { margin: 6px 0 18px; }
+
+/* --- Action buttons ------------------------------------------------------ */
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  padding: 12px 0 calc(var(--safe-bottom) + 14px);
+}
+
+.action {
+  width: 66px;
+  height: 66px;
+  border: none;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.action:active { transform: scale(0.9); }
+.action:disabled { opacity: 0.35; }
+.action-left  { color: var(--no); }
+.action-right { color: var(--yes); }
+.action-undo  { width: 48px; height: 48px; font-size: 24px; color: var(--mid); }
+
+/* --- Saved list ---------------------------------------------------------- */
+
+.saved-list {
+  flex: 1;
+  margin: 0;
+  padding: 0 16px calc(var(--safe-bottom) + 16px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  list-style: none;
+}
+.saved-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.saved-score {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--chip);
+  font-weight: 800;
+}
+.saved-score.high { color: var(--yes); }
+.saved-score.mid  { color: var(--mid); }
+.saved-score.low  { color: var(--no); }
+.saved-text { flex: 1; min-width: 0; }
+.saved-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-meta { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.saved-buttons { display: flex; flex-direction: column; gap: 6px; }
+.saved-buttons button { min-height: 32px; padding: 5px 10px; font-size: 13px; }
+
+/* --- Buttons ------------------------------------------------------------- */
+
+.btn-primary, .btn-secondary {
+  display: inline-block;
+  min-height: 44px;            /* Apple's minimum touch target */
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+}
+.btn-primary   { border: none; background: var(--accent); color: #fff; }
+.btn-secondary { border: 1px solid var(--line); background: var(--card); color: var(--text); }
+
+/* --- Bottom sheets ------------------------------------------------------- */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(20, 12, 10, 0.45);
+  z-index: 10;
+}
+
+.sheet {
+  width: 100%;
+  max-height: 90%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px calc(var(--safe-bottom) + 16px);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--card);
+  animation: slide-up 0.25s ease;
+}
+@keyframes slide-up { from { transform: translateY(100%); } }
+
+.grabber {
+  width: 36px;
+  height: 5px;
+  margin: 0 auto 12px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.sheet h2 { margin: 0; font-size: 20px; }
+.sheet-hint { margin: 4px 0 12px; font-size: 13px; color: var(--muted); }
+
+#anfrage {
+  flex: 1;
+  min-height: 200px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;               /* 16px stops iOS from zooming into the text field */
+  line-height: 1.45;
+  resize: none;
+}
+
+.sheet-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.sheet-buttons .btn-primary { margin-left: auto; }
+
+.filter-label { margin: 14px 0 8px; font-size: 15px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-toggle {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 14px;
+  cursor: pointer;
+}
+.chip-toggle[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+#min-score { width: 100%; accent-color: var(--accent); }
+
+/* --- Toast --------------------------------------------------------------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 100px);
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 20;
+}
+
+/* Wider screens (laptop browser): keep the phone-like layout centered */
+@media (min-width: 600px) {
+  body { max-width: 440px; margin: 0 auto; }
+}

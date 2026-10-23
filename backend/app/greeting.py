@@ -25,11 +25,15 @@ def greeting_for(listing: Listing) -> str:
             return f"Sehr geehrte Frau {surname},"
         return f"Sehr geehrter Herr {surname},"
 
-    if "wg" in name.lower() or listing.housing_type in _WG_TYPES:
+    if "wg" in name.lower():
         return "Hallo liebe WG,"
 
+    # A first name wins over the listing type: "Lena" in a 2er-WG is still Lena.
     if _FIRST_NAME.match(name):
         return f"Hallo {name},"
+
+    if listing.housing_type in _WG_TYPES:
+        return "Hallo liebe WG,"
 
     # Unknown contact or a company ("Immobilien GmbH"): stay neutral and polite.
     if name:
