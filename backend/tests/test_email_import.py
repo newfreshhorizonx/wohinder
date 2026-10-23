@@ -1,7 +1,7 @@
 """Tests for the email import: parsing, dedup and the importer. No network needed.
 
-The emails here are invented. Replace them with anonymised copies of real alert
-emails once those arrive, so the parser is tested against the real layout.
+Most emails here are invented; the "real layout" ones copy the structure of a
+real alert with anonymised content. Add one per site as real alerts arrive.
 """
 
 from datetime import date
@@ -140,3 +140,74 @@ def test_import_reports_emails_without_listings():
     store = ListingStore(":memory:")
     inbox = FakeInbox([make_alert(uid=1, html="<p>Aktiviere dein Konto</p>")])
     assert run_import(inbox, store).empty == ["wg-gesucht: Neue Angebote"]
+
+
+# --- Real WG-Gesucht layout (Oct 2026), anonymised ---------------------------
+# Same structure as a real alert: title in quotes in a <p>, then an
+# "Angebot ansehen" button linking to /<id>.html, plus upsell buttons.
+# Titles, IDs and names are invented.
+
+WG_REAL_HTML = """
+<table><tbody><tr><td>
+  <p>Hallo <b>Max Muster</b>,</p>
+  <p>es gibt 2 neue Angebote zu Ihrem Suchauftrag "Wg" (WG-Zimmer, 10000001)</p>
+</td></tr></tbody></table>
+<table><tbody><tr><td>
+  <p>Um einzelne Angebote Ihres Suchauftrags aufzurufen, klicken Sie bitte den Button
+     unter dem jeweiligen Anzeigentitel.</p>
+  <p> "Ruhiges WG-Zimmer in Bessungen" </p>
+  <div><table><tbody><tr><td><table><tbody><tr><td>
+    <a href='https://www.wg-gesucht.de/13333333.html?campaign=suchauftrag_detail'>
+      Angebot ansehen </a>
+  </td></tr></tbody></table></td></tr></tbody></table>
+  <table><tbody><tr><td><table><tbody><tr><td>
+    <a href='https://www.wg-gesucht.de/wgg-plus-shop.html?utm_source=email_alert'>
+      Chancen Check<img src="lock.svg"></a>
+  </td></tr></tbody></table></td></tr></tbody></table></div>
+  <p>Unser Tipp: Schneller ins neue Zuhause mit WG-Gesucht+.</p>
+  <a href='https://www.wg-gesucht.de/wgg-plus-shop.html'>Alle Vorteile</a>
+  <p> "Großes Zimmer nahe TU & h_da" </p>
+  <div><table><tbody><tr><td>
+    <a href='https://www.wg-gesucht.de/14444444.html?campaign=suchauftrag_detail'>
+      Angebot ansehen </a>
+  </td></tr></tbody></table></div>
+  <a href='https://www.wg-gesucht.de/wohnraumangebote.html?campaign=suchauftrag_list'>
+    Alle passenden Angebote ansehen</a>
+  <a href='https://www.wg-gesucht.de/mein-wg-gesucht-filter.html'>Suchauftrag verwalten</a>
+</td></tr></tbody></table>
+"""
+
+WG_REAL_TEXT = """Hallo Max Muster,
+
+es gibt 2 neue Angebote zu Ihrem Suchauftrag "Wg" (WG-Zimmer, 10000001).
+
+Einzelne Angebote Ihres Suchauftrags rufen Sie über den Link unter dem Angebotstitel auf:
+
+     "Ruhiges WG-Zimmer in Bessungen"
+     https://www.wg-gesucht.de/13333333.html?campaign=suchauftrag_detail
+
+     "Großes Zimmer nahe TU & h_da"
+     https://www.wg-gesucht.de/14444444.html?campaign=suchauftrag_detail
+
+Alle Angebote, die Ihren Filtereinstellungen entsprechen, sehen Sie hier:
+https://www.wg-gesucht.de/wohnraumangebote.html?campaign=suchauftrag_list
+"""
+
+WG_REAL_EXPECTED = [
+    ("wg-gesucht:13333333", "Ruhiges WG-Zimmer in Bessungen",
+     "https://www.wg-gesucht.de/13333333.html"),
+    ("wg-gesucht:14444444", "Großes Zimmer nahe TU & h_da",
+     "https://www.wg-gesucht.de/14444444.html"),
+]
+
+
+def test_wg_gesucht_real_layout_html():
+    listings = parse_alert(make_alert(html=WG_REAL_HTML, text=WG_REAL_TEXT))
+    assert [(l.id, l.title, l.url) for l in listings] == WG_REAL_EXPECTED
+    # Real alerts carry no price, size or date, and no upsell text as description
+    assert all(l.warmmiete is None and l.description == "" for l in listings)
+
+
+def test_wg_gesucht_real_layout_text_only():
+    listings = parse_alert(make_alert(text=WG_REAL_TEXT))
+    assert [(l.id, l.title, l.url) for l in listings] == WG_REAL_EXPECTED

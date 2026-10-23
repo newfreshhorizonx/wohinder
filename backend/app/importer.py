@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import Protocol
@@ -46,6 +47,8 @@ def run_import(inbox: AlertSource, store: ListingStore) -> ImportResult:
 
 
 def main() -> None:
+    # The Windows console isn't UTF-8 by default and crashes on emoji in subjects.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     load_env()
     store = ListingStore()
     with Inbox() as inbox:
