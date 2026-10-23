@@ -4,6 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.anfrage import MISSING_EMAIL, anfrage_for
+from app.db import ListingStore
 from app.main import app, swipes
 from app.models import HousingType
 
@@ -165,3 +166,25 @@ def test_root_redirects_to_app():
     response = client.get("/", follow_redirects=False)
     assert response.status_code in (302, 307)
     assert response.headers["location"] == "/app/"
+
+
+# --- Listing source: database, fake listings as fallback ----------------------
+
+def test_empty_database_falls_back_to_fake_listings():
+    assert client.get("/health").json()["listings"] == "fake"
+    assert all(listing_id.startswith("fake-") for listing_id in feed_ids())
+
+
+def test_feed_uses_imported_listings(empty_listing_db):
+    store = ListingStore(empty_listing_db)
+    store.add(make_listing(id="wg-gesucht:1234567", title="Echtes Zimmer", warmmiete=400))
+    store.close()
+
+    assert client.get("/health").json()["listings"] == "database"
+    assert feed_ids() == ["wg-gesucht:1234567"]   # fake listings are gone
+
+    response = client.post(f"/profiles/{PROFILE}/swipes",
+                           json={"listing_id": "wg-gesucht:1234567", "direction": "right"})
+    assert response.status_code == 200
+    assert [item["listing"]["title"] for item in client.get(f"/profiles/{PROFILE}/saved").json()] \
+        == ["Echtes Zimmer"]

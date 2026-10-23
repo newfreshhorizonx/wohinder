@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from .anfrage import anfrage_for
-from .db import ListingStore
+from .db import DEFAULT_DB, ListingStore
 from .fake_listings import FAKE_LISTINGS
 from .greeting import greeting_for
 from .models import Listing, Profile, ScoreBreakdown
@@ -23,8 +23,25 @@ app = FastAPI(title="Wohinder", description="Swipe your way to your next Wohnung
 profiles = load_profiles()
 swipes = SwipeStore()
 
-# Listing source. TODO(M2): read from the database instead of the fake listings.
-listings: dict[str, Listing] = {listing.id: listing for listing in FAKE_LISTINGS}
+# The database filled by `python -m app.importer`. Tests point this at a temp file.
+LISTING_DB: Path | str = DEFAULT_DB
+
+
+def _imported_listings() -> list[Listing]:
+    store = ListingStore(LISTING_DB)
+    try:
+        return store.all()
+    finally:
+        store.close()
+
+
+def _listings() -> dict[str, Listing]:
+    """Listings for the swipe app: the imported ones, or the fake ones while there are none.
+
+    Read on every request, so newly imported listings show up without a restart.
+    """
+    # `a or b` returns b when a is empty, like `a.isEmpty() ? b : a` in Java
+    return {listing.id: listing for listing in _imported_listings() or FAKE_LISTINGS}
 
 
 def _get_profile(profile_id: str) -> Profile:
@@ -35,7 +52,8 @@ def _get_profile(profile_id: str) -> Profile:
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "profiles": list(profiles)}
+    source = "database" if _imported_listings() else "fake"
+    return {"status": "ok", "profiles": list(profiles), "listings": source}
 
 
 @app.get("/profiles")
@@ -53,11 +71,7 @@ def get_profile(profile_id: str) -> Profile:
 @app.get("/listings")
 def list_listings() -> list[Listing]:
     """Everything imported from alert emails so far, newest first."""
-    store = ListingStore()
-    try:
-        return store.all()
-    finally:
-        store.close()
+    return _imported_listings()
 
 
 @app.post("/profiles/{profile_id}/score")
@@ -76,7 +90,7 @@ def feed(profile_id: str) -> list[dict]:
     profile = _get_profile(profile_id)
     done = swipes.swiped_ids(profile_id)
     cards = []
-    for listing in listings.values():
+    for listing in _listings().values():
         if listing.id in done:
             continue
         result = score(listing, profile)
@@ -91,7 +105,7 @@ def feed(profile_id: str) -> list[dict]:
 def record_swipe(profile_id: str, swipe: Swipe) -> dict:
     """Save a swipe. A right swipe returns the Anfrage preview (nothing is sent yet)."""
     profile = _get_profile(profile_id)
-    listing = listings.get(swipe.listing_id)
+    listing = _listings().get(swipe.listing_id)
     if listing is None:
         raise HTTPException(404, f"Unknown listing '{swipe.listing_id}'")
     swipes.record(profile_id, swipe)
@@ -118,6 +132,7 @@ def undo_swipe(profile_id: str, listing_id: str) -> dict:
 def saved(profile_id: str) -> list[dict]:
     """Listings swiped right ("Gemerkt"), newest first, each with its Anfrage."""
     profile = _get_profile(profile_id)
+    listings = _listings()
     items = []
     for listing_id in swipes.right_ids(profile_id):
         listing = listings.get(listing_id)
