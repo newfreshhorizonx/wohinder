@@ -28,8 +28,8 @@ class SiteLinks:
 
 
 SITES = {
-    # Alerts: https://www.wg-gesucht.de/14270465.html
-    # Website: https://www.wg-gesucht.de/wg-zimmer-in-Darmstadt-Bessungen.14270465.html
+    # Alerts: https://www.wg-gesucht.de/12345678.html
+    # Website: https://www.wg-gesucht.de/wg-zimmer-in-Darmstadt-Bessungen.12345678.html
     "wg-gesucht": SiteLinks(
         url=re.compile(r"https?://(?:www\.)?wg-gesucht\.de/(?:[^\s\"'<>?#/]+?\.)?\d{5,}\.html"),
         id=re.compile(r"[/.](\d{5,})\.html$"),
