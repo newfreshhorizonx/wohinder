@@ -6,6 +6,13 @@ Automated apartment search for students in Darmstadt. Wohinder collects listings
 WG-Gesucht, Kleinanzeigen and ImmoScout24 alert emails, scores how well each one fits
 your profile, and sends a personalized Anfrage with a single swipe.
 
+![Status](https://img.shields.io/badge/status-in%20development-orange)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+
+> **Status:** milestone 1 of 7, backend skeleton with profiles, rule-based scoring and
+> greeting detection. See [PLAN.md](PLAN.md) for the roadmap.
+
 ## How it works
 
 1. **Collect:** saved searches on the listing sites send alert emails to a dedicated inbox.
