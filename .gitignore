@@ -3,6 +3,11 @@
 *.env
 !.env.example
 
+# Screenshots in the repo root (may show passwords); app icons live in frontend/icons/
+/*.png
+/*.jpg
+/*.jpeg
+
 # Python
 __pycache__/
 *.pyc
