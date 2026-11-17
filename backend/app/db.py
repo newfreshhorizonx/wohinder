@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,7 +10,12 @@ from pathlib import Path
 from .models import Listing
 from .profiles import REPO_ROOT
 
-DEFAULT_DB = REPO_ROOT / "data" / "wohinder.sqlite"
+# On Vercel the project folder is read-only; only /tmp is writable (and temporary).
+# Vercel sets the VERCEL environment variable on its servers.
+if os.environ.get("VERCEL"):
+    DEFAULT_DB = Path("/tmp/wohinder.sqlite")
+else:
+    DEFAULT_DB = REPO_ROOT / "data" / "wohinder.sqlite"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS listings (

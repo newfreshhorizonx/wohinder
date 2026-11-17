@@ -1,0 +1,15 @@
+# Used by Vercel to deploy the backend (and the PWA it serves under /app/).
+# For local development, backend/requirements.txt is still the one to install.
+[project]
+name = "wohinder"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.110",
+    "pydantic>=2.6",
+    "PyYAML>=6.0",
+    "beautifulsoup4>=4.12",
+]
+
+[tool.vercel]
+entrypoint = "backend.app.main:app"
