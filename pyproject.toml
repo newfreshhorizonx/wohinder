@@ -1,0 +1,20 @@
+# Used by Vercel to deploy the backend. For local work, backend/requirements.txt
+# installs the same packages plus the dev tools; keep both lists in sync.
+
+[project]
+name = "wohinder"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110",
+    "pydantic>=2.6",
+    "PyYAML>=6.0",
+    "beautifulsoup4>=4.12",
+    "psycopg[binary]>=3.2",   # Postgres driver for the cloud database
+]
+
+[tool.uv]
+package = false   # only install the dependencies, don't build this repo as a package
+
+[tool.vercel]
+entrypoint = "backend.app.main:app"

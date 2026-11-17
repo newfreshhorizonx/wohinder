@@ -1,0 +1,12 @@
+# Never upload secrets, local data or dev-only files to Vercel
+.env
+*.env
+data/
+*.sqlite
+/*.png
+/*.jpg
+/*.jpeg
+backend/.venv/
+backend/tests/
+**/__pycache__/
+.pytest_cache/
