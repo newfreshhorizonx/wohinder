@@ -1,0 +1,25 @@
+# Asks the deployed app to read new alert emails, every 30 minutes.
+# Needs in GitHub → Settings → Secrets and variables → Actions:
+#   secret   IMPORT_SECRET  (same value as in Vercel)
+#   variable APP_URL        e.g. https://wohinder.vercel.app
+# You can also start it by hand: Actions → Import alert emails → Run workflow.
+
+name: Import alert emails
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the import endpoint
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          IMPORT_SECRET: ${{ secrets.IMPORT_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            -X POST -H "Authorization: Bearer $IMPORT_SECRET" \
+            "$APP_URL/api/import"

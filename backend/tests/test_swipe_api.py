@@ -1,11 +1,10 @@
 """Tests for the swipe app API (M4): feed, swipes and the Anfrage preview. Run: pytest"""
 
-import pytest
 from fastapi.testclient import TestClient
 
 from app.anfrage import MISSING_EMAIL, anfrage_for
 from app.db import ListingStore
-from app.main import app, swipes
+from app.main import app
 from app.models import HousingType
 
 from .test_core import make_listing, make_profile
@@ -13,14 +12,6 @@ from .test_core import make_listing, make_profile
 client = TestClient(app)  # calls the API in-process, no server needed
 
 PROFILE = "souissinebilai"
-
-
-@pytest.fixture(autouse=True)
-def fresh_swipes():
-    """autouse: runs around every test in this file, so each starts with no swipes."""
-    swipes._swipes.clear()
-    yield
-    swipes._swipes.clear()
 
 
 def feed_ids(profile_id: str = PROFILE) -> list[str]:

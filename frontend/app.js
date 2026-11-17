@@ -43,6 +43,11 @@ async function api(method, path, body) {
     headers: body ? { "Content-Type": "application/json" } : {},
     body: body ? JSON.stringify(body) : undefined,
   });
+  if (response.status === 401) {
+    // Not logged in (or the password changed): go to the login page
+    window.location.href = "/login";
+    throw new Error("Login required");
+  }
   if (!response.ok) throw new Error(`${method} ${path}: ${response.status}`);
   return response.json();
 }
